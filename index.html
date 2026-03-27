@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slap Battles WIKI of Limus</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 { text-align: center; color: #ff4757; }
+        
+        /* Сетка перчаток */
+        .gloves-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .glove-card {
+            background: #2f3542;
+            border-radius: 15px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .glove-card:hover {
+            transform: scale(1.05);
+            border-color: #ff4757;
+        }
+
+        .glove-img {
+            width: 100%;
+            height: 150px;
+            object-fit: contain;
+            background: #57606f;
+            border-radius: 10px;
+        }
+
+        .glove-name {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        /* Окно с информацией (Модальное окно) */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #2f3542;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px; right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            color: #ff4757;
+        }
+
+        .how-to-get {
+            background: #1e272e;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            color: #7bed9f;
+        }
+        
+        /* Кнопка обновления (для вида) */
+        .update-status {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 0.8em;
+            color: #a4b0be;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🥊 Slap Battles Database</h1>
+    <div class="update-status">Версия базы данных: <span id="version">1.0</span></div>
+
+    <div class="gloves-grid" id="grid">
+        <!-- Сюда вставляются перчатки через код -->
+    </div>
+
+    <!-- Окно информации -->
+    <div class="modal" id="infoModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <img id="modalImg" src="" class="glove-img" style="height: 200px;">
+            <h2 id="modalTitle"></h2>
+            <div class="how-to-get">
+                <h3>🎯 Как получить:</h3>
+                <p id="modalDesc"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 🛠️ АДМИНКА: РЕДАКТИРУЙ ДАННЫЕ ЗДЕСЬ 🛠️
+        // ==========================================
+        
+        const appVersion = "1.2"; // Меняй цифру, когда добавляешь новое
+        
+        const glovesData = [
+            {
+                name: "OVERKILL",
+                image: "https://static.wikia.nocookie.net/roblox-slap-battles/images/6/68/OVERKILL1StandUpdated.png/revision/latest?cb=20230304045732", // Ссылка на картинку
+                description: "Просто зайди в игру. Она дается бесплатно."
+            },
+            {
+                name: "Push",
+                image: "https://tr.rbxcdn.com/180DAY-a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6/420/420/Image/Png", 
+                description: "Найди кнопку в лобби или купи за 500 слапов."
+            },
+            {
+                name: "God's Hand",
+                image: "https://tr.rbxcdn.com/180DAY-z9y8x7w6v5u4t3s2r1q0p9o8n7m6l5k4/420/420/Image/Png",
+                description: "Сложный квест: найди 5 скрытых камней на карте."
+            }
+            // Чтобы добавить новую, скопируй блок {...}, вставь ниже и поменяй текст!
+        ];
+
+        // ==========================================
+        // КОНЕЦ АДМИНКИ (ДАЛЬШЕ НЕ ТРОГАТЬ)
+        // ==========================================
+
+        const grid = document.getElementById('grid');
+        const modal = document.getElementById('infoModal');
+        
+        // Отображение версии
+        document.getElementById('version').innerText = appVersion;
+
+        // Функция создания карточек
+        function renderGloves() {
+            grid.innerHTML = '';
+            glovesData.forEach(glove => {
+                const card = document.createElement('div');
+                card.className = 'glove-card';
+                card.onclick = () => openModal(glove);
+                
+                // Если картинки нет, ставим заглушку
+                const imgUrl = glove.image.includes('http') ? glove.image : 'https://via.placeholder.com/150?text=No+Image';
+
+                card.innerHTML = `
+                    <img src="${imgUrl}" class="glove-img" alt="${glove.name}">
+                    <div class="glove-name">${glove.name}</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Открытие окна
+        function openModal(glove) {
+            document.getElementById('modalTitle').innerText = glove.name;
+            document.getElementById('modalDesc').innerText = glove.description;
+            document.getElementById('modalImg').src = glove.image.includes('http') ? glove.image : 'https://via.placeholder.com/150';
+            modal.style.display = 'flex';
+        }
+
+        // Закрытие окна
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        // Запуск при старте
+        renderGloves();
+
+        // Закрытие по клику вне окна
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
