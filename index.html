@@ -14,7 +14,6 @@
         }
         h1 { text-align: center; color: #ff4757; }
         
-        /* Сетка перчаток */
         .gloves-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -26,33 +25,29 @@
         .glove-card {
             background: #2f3542;
             border-radius: 15px;
-            padding: 10px;
+            padding: 20px;
             text-align: center;
             cursor: pointer;
             transition: transform 0.2s;
             border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80px;
         }
 
         .glove-card:hover {
             transform: scale(1.05);
             border-color: #ff4757;
-        }
-
-        .glove-img {
-            width: 100%;
-            height: 150px;
-            object-fit: contain;
-            background: #57606f;
-            border-radius: 10px;
+            background: #3a404d;
         }
 
         .glove-name {
-            margin-top: 10px;
             font-weight: bold;
             font-size: 1.1em;
+            color: white;
         }
 
-        /* Окно с информацией (Модальное окно) */
         .modal {
             display: none;
             position: fixed;
@@ -89,7 +84,6 @@
             color: #7bed9f;
         }
         
-        /* Кнопка обновления (для вида) */
         .update-status {
             text-align: center;
             margin-bottom: 20px;
@@ -101,18 +95,14 @@
 <body>
 
     <h1>🧤 Slap Battles Guides</h1>
-    <div class="update-status">Версия базы данных: <span id="version">1.0</span></div>
+    <div class="update-status">Версия: <span id="version">1.3</span> ✨</div>
 
-    <div class="gloves-grid" id="grid">
-        <!-- Сюда вставляются перчатки через код -->
-    </div>
+    <div class="gloves-grid" id="grid"></div>
 
-    <!-- Окно информации -->
     <div class="modal" id="infoModal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal()">&times;</span>
-            <img id="modalImg" src="" class="glove-img" style="height: 200px;">
-            <h2 id="modalTitle"></h2>
+            <h2 id="modalTitle" style="color: #ff4757; margin-bottom: 10px;"></h2>
             <div class="how-to-get">
                 <h3>🎯 Как получить:</h3>
                 <p id="modalDesc"></p>
@@ -125,70 +115,66 @@
         // 🛠️ АДМИНКА: РЕДАКТИРУЙ ДАННЫЕ ЗДЕСЬ 🛠️
         // ==========================================
         
-        const appVersion = "1.2"; // Меняй цифру, когда добавляешь новое
+        const appVersion = "1.3";
         
         const glovesData = [
             {
                 name: "Acrobat",
-
-                description: "Выйди из игры ,зайди в её профиль выбери Comunity и в следующем окне нажми Join Comunity"
+                description: "Выйди из игры, зайди в её профиль, выбери Community и в следующем окне нажми Join Community"
             },
             {
                 name: "Push",
-
                 description: "Найди кнопку в лобби или купи за 500 слапов."
             },
             {
                 name: "God's Hand",
-
                 description: "Сложный квест: найди 5 скрытых камней на карте."
             }
-            // Чтобы добавить новую, скопируй блок {...}, вставь ниже и поменяй текст!
+            // 📌 Чтобы добавить новую перчатку:
+            // 1. Поставь запятую после предыдущей закрывающей скобки }
+            // 2. Скопируй блок ниже и вставь сюда:
+            /*
+            , {
+                name: "НАЗВАНИЕ",
+                description: "Как получить"
+            }
+            */
         ];
 
         // ==========================================
-        // КОНЕЦ АДМИНКИ (ДАЛЬШЕ НЕ ТРОГАТЬ)
+        // 🔚 КОНЕЦ АДМИНКИ (ДАЛЬШЕ НЕ ТРОГАТЬ)
         // ==========================================
 
         const grid = document.getElementById('grid');
         const modal = document.getElementById('infoModal');
         
-        // Отображение версии
         document.getElementById('version').innerText = appVersion;
 
-        // Функция создания карточек
         function renderGloves() {
             grid.innerHTML = '';
             glovesData.forEach(glove => {
                 const card = document.createElement('div');
                 card.className = 'glove-card';
                 card.onclick = () => openModal(glove);
-                
-                // Если картинки нет, ставим заглушку
-                const imgUrl = glove.image.includes('http') ? glove.image : 'https://via.placeholder.com/150?text=No+Image';
 
-                card.innerHTML = `
-                    <img src="${imgUrl}" class="glove-img" alt="${glove.name}">
-                    <div class="glove-name">${glove.name}</div>
-                `;
+                // ✅ Карточка только с текстом (без картинок!)
+                card.innerHTML = `<div class="glove-name">${glove.name}</div>`;
+                
                 grid.appendChild(card);
             });
         }
 
-        // Открытие окна
         function openModal(glove) {
             document.getElementById('modalTitle').innerText = glove.name;
             document.getElementById('modalDesc').innerText = glove.description;
-            document.getElementById('modalImg').src = glove.image.includes('http') ? glove.image : 'https://via.placeholder.com/150';
             modal.style.display = 'flex';
         }
 
-        // Закрытие окна
         function closeModal() {
             modal.style.display = 'none';
         }
 
-        // Запуск при старте
+        // Запуск
         renderGloves();
 
         // Закрытие по клику вне окна
@@ -197,6 +183,9 @@
                 closeModal();
             }
         }
+
+        // Проверка в консоли
+        console.log(`✅ Slap Battles Guide v${appVersion} loaded!`);
     </script>
 </body>
 </html>
